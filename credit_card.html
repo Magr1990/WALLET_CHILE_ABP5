@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta de Crédito - Wallet Chile</title>
+    <meta name="author" content="Miguel Gonzalez Roblero">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css.css">
+    <style>
+        .flag-icon { font-size: 1.2rem; margin-right: 5px; }
+        .card-visual {
+            background: linear-gradient(135deg, #0033A0 0%, #001a53 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .card-visual:hover { transform: scale(1.02); }
+        .card-chip {
+            width: 40px; height: 30px;
+            background: linear-gradient(135deg, #e0e0e0 0%, #a0a0a0 100%);
+            border-radius: 5px; margin-bottom: 15px;
+        }
+        .card-number {
+            font-size: 1.1rem; letter-spacing: 2px; margin-bottom: 10px;
+            font-family: 'Courier New', monospace; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        .card-logo {
+            position: absolute; top: 15px; right: 15px;
+            font-weight: bold; font-style: italic; font-size: 1.2rem;
+        }
+        .copy-icon {
+            font-size: 1rem; margin-left: 15px; cursor: pointer;
+            background: rgba(255,255,255,0.2); padding: 5px 10px;
+            border-radius: 20px; transition: all 0.2s; vertical-align: middle;
+        }
+        .copy-icon:hover {
+            background: rgba(255,255,255,0.4); transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="chile-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="m-0">Tarjeta de Crédito</h4>
+            <span class="logo-chile" style="background: white; padding: 2px 8px; border-radius: 4px;">Wallet Chile</span>
+        </div>
+    </div>
+
+    <div class="container mt-3">
+        
+        <div class="card-visual mb-3" onclick="openSecurityModal()">
+            <div class="card-logo">VISA</div>
+            <div class="card-chip"></div>
+            <div class="card-number">
+                <span id="card-number-text">**** **** **** 1234</span>
+                <span class="copy-icon" onclick="copyCardNumber(event)" title="Copiar número">📋</span>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+                <div>
+                    <small class="text-white-50">Titular</small>
+                    <div class="fw-bold">MIGUEL GONZALEZ</div>
+                </div>
+                <div class="text-end">
+                    <small class="text-white-50">Expira</small>
+                    <div class="fw-bold" id="card-expiry">**/28</div>
+                    <small class="text-white-50">CVV: <span id="card-cvv">***</span></small>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="balance-card h-100 p-2 mb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="card-title m-0 small"><span class="flag-icon">🇨🇱</span>Nacional</h6>
+                    </div>
+                    <div class="balance-amount text-danger-custom fs-5 mb-1">
+                        <span id="clp-used">$ 145.990</span>
+                    </div>
+                    <small class="text-muted d-block" style="font-size: 0.7rem;">(Utilizado)</small>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">Total:</span>
+                        <span class="font-weight-bold">$ 1.5M</span>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span class="text-muted">Disp:</span>
+                        <span class="font-weight-bold text-success-custom">$ 1.3M</span>
+                    </div>
+                    <div class="mt-auto">
+                        <button class="btn btn-chile w-100 btn-sm" onclick="payNational()">Pagar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="balance-card h-100 p-2 mb-0">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <h6 class="card-title m-0 small"><span class="flag-icon">🇺🇸</span>Internac.</h6>
+                    </div>
+                    <div class="balance-amount text-danger-custom fs-5 mb-1">
+                        <span id="usd-used">US$ 120,50</span>
+                    </div>
+                    <small class="text-muted d-block" style="font-size: 0.7rem;">(Utilizado)</small>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">Total:</span>
+                        <span class="font-weight-bold">US$ 2K</span>
+                    </div>
+                    <div class="d-flex justify-content-between small mb-2">
+                        <span class="text-muted">Disp:</span>
+                        <span class="font-weight-bold text-success-custom">US$ 1.8K</span>
+                    </div>
+                    <div class="mt-auto">
+                        <button class="btn btn-chile w-100 btn-sm" onclick="payInternational()">Pagar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <button class="btn btn-chile-secondary w-100 btn-sm" onclick="window.location.href='transactions.html'">Movimientos</button>
+            </div>
+            <div class="col-6">
+                <button class="btn btn-chile-secondary w-100 btn-sm" onclick="alert('Configurando tarjeta...')">Configurar</button>
+            </div>
+        </div>
+
+        <div class="mt-3 mb-4 text-center">
+            <a href="menu.html" class="btn btn-link text-secondary">Volver al menú</a>
+        </div>
+        
+        <div class="text-end mb-3 text-muted">
+            <small>Desarrollado por Miguel Gonzalez Roblero</small>
+        </div>
+    </div>
+
+    <div id="securityModal" class="modal-overlay">
+        <div class="login-container" style="margin-top: 15vh; max-width: 350px;">
+            <h4 class="login-title">Seguridad</h4>
+            <p class="text-center">Ingrese su clave (1234) para ver los datos</p>
+            <input type="password" id="input-pin" class="form-control mb-3 text-center fs-4" placeholder="****" maxlength="4">
+            <button class="btn-chile w-100" onclick="verifyPin()">Ver Datos</button>
+            <button class="btn-chile-secondary w-100 mt-2" onclick="closeSecurityModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPJggK1Xp_jZKi9pqrfMf7gNJbs_-VDZA",
+            authDomain: "wallet-73c9f.firebaseapp.com",
+            projectId: "wallet-73c9f",
+            storageBucket: "wallet-73c9f.firebasestorage.app",
+            messagingSenderId: "23318227394",
+            appId: "1:23318227394:web:78cbc442708b8b55f68e5b",
+            measurementId: "G-KW76JRTY3V"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        const INACTIVITY_LIMIT = 5 * 60 * 1000;
+        let inactivityTimer;
+
+        function resetInactivityTimer() {
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                alert("Tu sesión ha expirado por inactividad.");
+                signOut(auth).then(() => window.location.href = 'login.html');
+            }, INACTIVITY_LIMIT);
+        }
+
+        ['mousemove', 'keypress', 'click', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
+        resetInactivityTimer();
+
+        let isRevealed = false;
+
+        window.openSecurityModal = function() {
+            if(isRevealed) {
+                hideCardData();
+            } else {
+                $('#input-pin').val('');
+                $('#securityModal').fadeIn();
+                $('#input-pin').focus();
+            }
+        }
+
+        window.closeSecurityModal = function() {
+            $('#securityModal').fadeOut();
+        }
+
+        window.verifyPin = function() {
+            const pin = $('#input-pin').val();
+            if(pin === '1234') {
+                $('#card-number-text').text('4500 1234 5678 9010');
+                $('#card-expiry').text('12/28');
+                $('#card-cvv').text('123');
+                isRevealed = true;
+                closeSecurityModal();
+                setTimeout(hideCardData, 10000); // Ocultar automáticamente tras 10s
+            } else {
+                alert('Clave incorrecta');
+            }
+        }
+
+        function hideCardData() {
+            $('#card-number-text').text('**** **** **** 1234');
+            $('#card-expiry').text('**/28');
+            $('#card-cvv').text('***');
+            isRevealed = false;
+        }
+
+        window.copyCardNumber = function(event) {
+            event.stopPropagation();
+            
+            if (!isRevealed) {
+                alert("Primero debes desbloquear la tarjeta para copiar el número.");
+                return;
+            }
+            
+            const numberText = $('#card-number-text').text();
+            navigator.clipboard.writeText(numberText).then(() => {
+                const originalText = $('.copy-icon').text();
+                $('.copy-icon').text('✅');
+                setTimeout(() => $('.copy-icon').text('📋'), 2000);
+            }).catch(err => {
+                console.error('Error al copiar', err);
+            });
+        }
+
+        let clpDebt = localStorage.getItem('cardClpDebt') !== null ? parseFloat(localStorage.getItem('cardClpDebt')) : 145990;
+        let usdDebt = localStorage.getItem('cardUsdDebt') !== null ? parseFloat(localStorage.getItem('cardUsdDebt')) : 120.50;
+        const DOLLAR_OBSERVED = 985;
+
+        function updateBalances() {
+            $('#clp-used').text('$ ' + clpDebt.toLocaleString('es-CL'));
+        }
+        updateBalances();
+
+        window.payNational = async function() {
+            if (clpDebt <= 0) {
+                alert("No tienes deuda nacional pendiente.");
+                return;
+            }
+
+            let currentBalance = parseInt(localStorage.getItem('walletBalance')) || 0;
+            
+            if (currentBalance >= clpDebt) {
+                if(confirm(`¿Confirmas el pago de $${clpDebt.toLocaleString('es-CL')} desde tu Cuenta Corriente?`)) {
+                    currentBalance -= clpDebt;
+                    localStorage.setItem('walletBalance', currentBalance);
+                    
+                    await addTransactionToFirebase(clpDebt, 'Pago Tarjeta Crédito Nacional');
+
+                    clpDebt = 0;
+                    localStorage.setItem('cardClpDebt', 0);
+                    updateBalances();
+                    alert("¡Pago Nacional realizado con éxito! Se ha descontado de tu saldo.");
+                }
+            } else {
+                 if(confirm(`¿Confirmas el pago de $${clpDebt.toLocaleString('es-CL')}?`)) {
+                    currentBalance -= clpDebt;
+                    localStorage.setItem('walletBalance', currentBalance);
+                    await addTransactionToFirebase(clpDebt, 'Pago Tarjeta Crédito Nacional');
+                    clpDebt = 0;
+                    localStorage.setItem('cardClpDebt', 0);
+                    updateBalances();
+                    alert("¡Pago Nacional realizado con éxito! Se ha descontado de tu saldo.");
+                 }
+            }
+        }
+
+        window.payInternational = async function() {
+            if (usdDebt <= 0) {
+                alert("No tienes deuda internacional pendiente.");
+                return;
+            }
+
+            let currentBalance = parseInt(localStorage.getItem('walletBalance')) || 0;
+            let amountInCLP = Math.round(usdDebt * DOLLAR_OBSERVED);
+
+            if (currentBalance >= amountInCLP) {
+                if(confirm(`El dólar observado hoy es $${DOLLAR_OBSERVED}.\nEl total a pagar es $${amountInCLP.toLocaleString('es-CL')}.\n\n¿Confirmas el pago?`)) {
+                    currentBalance -= amountInCLP;
+                    localStorage.setItem('walletBalance', currentBalance);
+
+                    await addTransactionToFirebase(amountInCLP, `Pago TC Internacional (US$${usdDebt})`);
+
+                    usdDebt = 0;
+                    localStorage.setItem('cardUsdDebt', 0);
+                    updateBalances();
+                    alert("¡Pago Internacional realizado con éxito! Se ha descontado de tu saldo.");
+                }
+            } else {
+                alert(`Saldo insuficiente. Necesitas $${amountInCLP.toLocaleString('es-CL')} (Dólar: $${DOLLAR_OBSERVED})`);
+            }
+        }
+
+        async function addTransactionToFirebase(amount, desc) {
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    await addDoc(collection(db, "transactions"), {
+                        type: 'credit_payment',
+                        amount: amount,
+                        date: new Date().toISOString(),
+                        desc: desc,
+                        userId: user.uid
+                    });
+                } catch (e) {
+                    console.error("Error guardando pago en Firebase", e);
+                }
+            } else {
+                console.warn("Usuario no autenticado, no se guardó en Firebase");
+            }
+        }
+    </script>
+</body>
+</html>

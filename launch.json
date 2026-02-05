@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Lanzar Chrome (Live Server)",
+            "url": "http://localhost:5500/login.html", 
+            "webRoot": "${workspaceFolder}"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Lanzar Archivo Local (Sin Servidor)",
+            "file": "${workspaceFolder}/login.html"
+        }
+    ]
+}

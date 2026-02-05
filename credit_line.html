@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Línea de Crédito - Wallet</title>
+    <link rel="stylesheet" href="css.css">
+    <style>
+        .d-flex { display: flex; }
+        .justify-content-between { justify-content: space-between; }
+        .align-items-center { align-items: center; }
+        .mt-4 { margin-top: 1.5rem; }
+        .mb-3 { margin-bottom: 1rem; }
+        .text-center { text-align: center; }
+        .w-100 { width: 100%; }
+        .mt-2 { margin-top: 0.5rem; }
+        .text-muted { color: #6c757d; }
+        .font-weight-bold { font-weight: bold; }
+        .container { padding: 1rem; max-width: 600px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+    <div class="chile-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h3>Línea de Crédito</h3>
+            <span class="logo-chile" style="background: white; padding: 2px 8px; border-radius: 4px;">Wallet Chile</span>
+        </div>
+    </div>
+
+    <div class="container mt-4">
+        <div class="balance-card">
+            <h5 class="card-title">Deuda Actual</h5>
+            <div class="balance-amount text-danger-custom">
+                <span id="credit-used-display">0</span>
+            </div>
+            <hr>
+            <div class="d-flex justify-content-between">
+                <span class="text-muted">Cupo Total Autorizado:</span>
+                <span class="font-weight-bold" id="credit-limit-display">$ 0</span>
+            </div>
+            <div class="d-flex justify-content-between">
+                <span class="text-muted">Cupo Disponible:</span>
+                <span class="font-weight-bold text-success-custom" id="credit-available-display">$ 0</span>
+            </div>
+            
+            <div class="mt-4 text-center">
+                <button class="btn-chile w-100" onclick="openPayModal()">Pagar Línea de Crédito</button>
+            </div>
+        </div>
+
+        <h5 class="mb-3 card-title">Movimientos de la Línea</h5>
+        <div id="credit-movements-list">
+            <div class="transaction-item transaction-withdrawal">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>Uso por Saldo Insuficiente</strong><br>
+                        <small class="text-muted">Cobertura automática</small>
+                    </div>
+                    <div class="text-danger-custom font-weight-bold">-  15.000</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="menu.html" class="btn-chile-secondary" style="text-decoration: none; display: inline-block;">Volver al Inicio</a>
+        </div>
+    </div>
+
+    <div id="payModal" class="modal-overlay">
+        <div class="login-container" style="margin-top: 15vh; max-width: 350px;">
+            <h4 class="login-title">Pagar Deuda</h4>
+            <p class="text-center">Monto total a pagar: <strong id="modal-pay-amount">$ 0</strong></p>
+            <button class="btn-chile w-100" onclick="processCreditPayment()">Confirmar Pago</button>
+            <button class="btn-chile-secondary w-100 mt-2" onclick="closePayModal()">Cancelar</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPJggK1Xp_jZKi9pqrfMf7gNJbs_-VDZA",
+            authDomain: "wallet-73c9f.firebaseapp.com",
+            projectId: "wallet-73c9f",
+            storageBucket: "wallet-73c9f.firebasestorage.app",
+            messagingSenderId: "23318227394",
+            appId: "1:23318227394:web:78cbc442708b8b55f68e5b",
+            measurementId: "G-KW76JRTY3V"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let deudaLinea = localStorage.getItem('lineDebt') !== null ? parseInt(localStorage.getItem('lineDebt')) : 150000;
+        let cupoTotal = 1000000;
+
+        function actualizarUI() {
+            const INACTIVITY_LIMIT = 5 * 60 * 1000;
+            let inactivityTimer;
+
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(() => {
+                    alert("Tu sesión ha expirado por inactividad.");
+                    signOut(auth).then(() => window.location.href = 'login.html');
+                }, INACTIVITY_LIMIT);
+            }
+
+            ['mousemove', 'keypress', 'click', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetInactivityTimer));
+            resetInactivityTimer();
+
+            $('#credit-used-display').text('$ ' + deudaLinea.toLocaleString('es-CL'));
+            $('#credit-limit-display').text('$ ' + cupoTotal.toLocaleString('es-CL'));
+            $('#credit-available-display').text('$ ' + (cupoTotal - deudaLinea).toLocaleString('es-CL'));
+            $('#modal-pay-amount').text('$ ' + deudaLinea.toLocaleString('es-CL'));
+        }
+
+        $(document).ready(function() {
+            actualizarUI();
+        });
+
+        window.openPayModal = function() {
+            if(deudaLinea <= 0) { alert("No tienes deuda por pagar."); return; }
+            $('#payModal').fadeIn();
+        }
+
+        window.closePayModal = function() {
+            $('#payModal').fadeOut();
+        }
+
+        window.processCreditPayment = async function() {
+            const user = auth.currentUser;
+            if(user) {
+                await addDoc(collection(db, "transactions"), {
+                    type: 'credit_payment',
+                    amount: deudaLinea,
+                    date: new Date().toISOString(),
+                    desc: 'Pago Línea de Crédito',
+                    userId: user.uid
+                });
+
+                let currentBalance = parseInt(localStorage.getItem('walletBalance')) || 0;
+                localStorage.setItem('walletBalance', currentBalance - deudaLinea);
+                
+                alert("Pago realizado con éxito. Se ha descontado de tu saldo.");
+                deudaLinea = 0;
+                localStorage.setItem('lineDebt', 0);
+                actualizarUI();
+                closePayModal();
+            } else {
+                alert("Debes iniciar sesión para realizar el pago.");
+            }
+        }
+    </script>
+</body>
+</html>
