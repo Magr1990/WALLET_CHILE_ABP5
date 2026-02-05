@@ -1,6 +1,6 @@
 # Wallet Chile 💰
 
-Bienvenido a **Wallet Chile**, una aplicación web de billetera digital simulada que permite gestionar saldo, realizar transferencias, depósitos y pagos de servicios. Este proyecto utiliza tecnologías web estándar y se integra con **Firebase** para la autenticación y persistencia, complementado con **LocalStorage** para una experiencia de usuario fluida.
+Bienvenido a **Wallet Chile**, una aplicación web de billetera digital que permite gestionar saldo, realizar transferencias, depósitos y pagos de servicios. Este proyecto cumple con los requerimientos de integración de tecnologías web estándar, **Firebase** para autenticación en la nube y **PostgreSQL** (administrado vía **pgAdmin**) para la persistencia y consulta de datos relacionales.
 
 ## 🚀 Características Principales
 
@@ -18,6 +18,10 @@ Bienvenido a **Wallet Chile**, una aplicación web de billetera digital simulada
     *   **Línea de Crédito Inteligente**: Uso automático del cupo si el saldo es insuficiente y gestión de pagos.
     *   **Tarjeta de Crédito**: Visualización de cupo nacional (CLP) e internacional (USD), con simulación de seguridad (CVV oculto tras clave) y pagos.
 *   **Pago de Servicios**: Interfaz para pago de cuentas básicas (Luz, Agua, etc.) y recargas.
+*   **Administración de Datos**:
+    *   Conexión a base de datos relacional **PostgreSQL**.
+    *   Scripts de automatización y consulta en **Python**.
+    *   Gestión visual de tablas y registros mediante **pgAdmin**.
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -25,11 +29,13 @@ Bienvenido a **Wallet Chile**, una aplicación web de billetera digital simulada
 *   **Frameworks y Librerías**:
     *   [jQuery](https://jquery.com/) (Manipulación del DOM y lógica de eventos).
     *   [Bootstrap 5](https://getbootstrap.com/) (Diseño responsivo, modales y componentes UI).
-*   **Backend as a Service (BaaS)**:
+*   **Backend y Base de Datos**:
     *   **Firebase Authentication**: Gestión de identidad y sesiones.
     *   **Firebase Firestore**: Base de datos NoSQL para persistencia de transacciones y usuarios.
+    *   **PostgreSQL & pgAdmin**: Base de datos relacional y herramienta de administración.
+    *   **Python**: Lenguaje para scripts de backend (`psycopg2`).
 
-## 📋 Instalación y Configuración
+## 📋 Guía de Instalación y Uso
 
 Para ejecutar este proyecto localmente, sigue estos pasos:
 
@@ -57,8 +63,27 @@ Para ejecutar este proyecto localmente, sigue estos pasos:
     };
     ```
 
-4.  **Ejecutar**:
+4.  **Configuración de Base de Datos (PostgreSQL & pgAdmin)**:
+    *   Abre **pgAdmin 4** y conecta a tu servidor local.
+    *   Crea una nueva base de datos (ej: `wallet_db`).
+    *   Abre la **Query Tool** (Herramienta de Consultas) y ejecuta el siguiente SQL para crear la tabla requerida por el script:
+        ```sql
+        CREATE TABLE usuarios (
+            id SERIAL PRIMARY KEY,
+            nombre VARCHAR(100),
+            email VARCHAR(100)
+        );
+        
+        INSERT INTO usuarios (nombre, email) VALUES ('Usuario Prueba', 'test@wallet.cl');
+        ```
+    *   Abre el archivo `import psycopg2.py` y actualiza las variables `user`, `password` y `database` con tus credenciales locales.
+
+5.  **Ejecutar**:
     *   Abre el archivo `login.html` en tu navegador web.
+    *   Para verificar la conexión a la base de datos PostgreSQL, ejecuta el script de Python desde la terminal:
+        ```bash
+        python "import psycopg2.py"
+        ```
     *   ¡Regístrate con un correo nuevo y comienza a usar la Wallet!
 
 ## 👤 Autor
