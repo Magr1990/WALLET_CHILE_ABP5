@@ -1,4 +1,4 @@
-
+-- Creación de la Base de Datos (Ejecutar primero si no existe)
 CREATE TABLE IF NOT EXISTS moneda (
     currency_id SERIAL PRIMARY KEY,
     currency_name VARCHAR(50) NOT NULL,
@@ -56,3 +56,16 @@ WHERE user_id = 1;
 
 DELETE FROM transaccion 
 WHERE transaction_id = 3;
+
+CREATE VIEW top_usuarios_saldo AS
+SELECT nombre, saldo 
+FROM usuario 
+ORDER BY saldo DESC 
+LIMIT 5;
+
+BEGIN;
+    UPDATE usuario SET saldo = saldo - 1000 WHERE user_id = 1;
+    UPDATE usuario SET saldo = saldo + 1000 WHERE user_id = 2;
+    INSERT INTO transaccion (sender_user_id, receiver_user_id, importe, currency_id, transaction_date)
+    VALUES (1, 2, 1000, 1, NOW());
+COMMIT;

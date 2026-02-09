@@ -1,6 +1,3 @@
-// ADVERTENCIA DE SEGURIDAD:
-// Almacenar contraseñas en texto plano en el código del cliente es inseguro.
-// En una aplicación real, utilice un backend seguro y hashing de contraseñas.
 let usuarios = [
     { username: "juan.perez", password: "clave123", nombre: "Juan Pérez" },
     { username: "maria.gonzalez", password: "chile2024", nombre: "María González" }
@@ -23,7 +20,6 @@ let usuarios = [
 let usuarioActual = null;
 
 function formatearMoneda(monto) {
-    // Usar Intl.NumberFormat para un formateo de moneda más robusto y estándar
     return new Intl.NumberFormat('es-CL', { style: 'currency', currency: 'CLP' }).format(Math.abs(monto));
 }
 

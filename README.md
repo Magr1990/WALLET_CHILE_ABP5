@@ -35,6 +35,40 @@ Bienvenido a **Wallet Chile**, una aplicación web de billetera digital que perm
     *   **PostgreSQL & pgAdmin**: Base de datos relacional y herramienta de administración.
     *   **Python**: Lenguaje para scripts de backend (`psycopg2`).
 
+## 📊 Modelo de Datos (Diagrama ER)
+
+El siguiente diagrama representa la estructura de la base de datos relacional diseñada para la Wallet:
+
+```mermaid
+erDiagram
+    USUARIO ||--o{ TRANSACCION : "realiza (envia)"
+    USUARIO ||--o{ TRANSACCION : "recibe"
+    MONEDA ||--o{ TRANSACCION : "define divisa"
+
+    USUARIO {
+        int user_id PK
+        string nombre
+        string correo_electronico
+        string contrasena
+        decimal saldo
+    }
+
+    TRANSACCION {
+        int transaction_id PK
+        int sender_user_id FK
+        int receiver_user_id FK
+        decimal importe
+        datetime transaction_date
+        int currency_id FK
+    }
+
+    MONEDA {
+        int currency_id PK
+        string currency_name
+        string currency_symbol
+    }
+```
+
 ## 📋 Guía de Instalación y Uso
 
 Para ejecutar este proyecto localmente, sigue estos pasos:
@@ -68,13 +102,34 @@ Para ejecutar este proyecto localmente, sigue estos pasos:
     *   Crea una nueva base de datos (ej: `wallet_db`).
     *   Abre la **Query Tool** (Herramienta de Consultas) y ejecuta el siguiente SQL para crear la tabla requerida por el script:
         ```sql
-        CREATE TABLE usuarios (
-            id SERIAL PRIMARY KEY,
-            nombre VARCHAR(100),
-            email VARCHAR(100)
+        CREATE TABLE IF NOT EXISTS moneda (
+            currency_id SERIAL PRIMARY KEY,
+            currency_name VARCHAR(50) NOT NULL,
+            currency_symbol VARCHAR(10) NOT NULL
+        );
+
+        CREATE TABLE IF NOT EXISTS usuario (
+            user_id SERIAL PRIMARY KEY,
+            nombre VARCHAR(100) NOT NULL,
+            correo_electronico VARCHAR(100) NOT NULL UNIQUE,
+            contrasena VARCHAR(100) NOT NULL,
+            saldo DECIMAL(15, 2) DEFAULT 0.00
+        );
+
+        CREATE TABLE IF NOT EXISTS transaccion (
+            transaction_id SERIAL PRIMARY KEY,
+            sender_user_id INT,
+            receiver_user_id INT,
+            importe DECIMAL(15, 2) NOT NULL,
+            transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            currency_id INT,
+            CONSTRAINT fk_sender FOREIGN KEY (sender_user_id) REFERENCES usuario(user_id),
+            CONSTRAINT fk_receiver FOREIGN KEY (receiver_user_id) REFERENCES usuario(user_id),
+            CONSTRAINT fk_currency FOREIGN KEY (currency_id) REFERENCES moneda(currency_id)
         );
         
-        INSERT INTO usuarios (nombre, email) VALUES ('Usuario Prueba', 'test@wallet.cl');
+        INSERT INTO moneda (currency_name, currency_symbol) VALUES ('Peso Chileno', 'CLP'), ('Dolar', 'USD');
+        INSERT INTO usuario (nombre, correo_electronico, contrasena, saldo) VALUES ('Usuario Prueba', 'test@wallet.cl', '123456', 0);
         ```
     *   Abre el archivo `import psycopg2.py` y actualiza las variables `user`, `password` y `database` con tus credenciales locales.
 
@@ -85,6 +140,12 @@ Para ejecutar este proyecto localmente, sigue estos pasos:
         python "import psycopg2.py"
         ```
     *   ¡Regístrate con un correo nuevo y comienza a usar la Wallet!
+
+## ❓ Solución de Problemas Comunes
+
+*   **Error: auth/api-key-not-valid**: 
+    *   Este error indica que la propiedad `apiKey` en tu configuración de Firebase es inválida o está vacía.
+    *   Asegúrate de reemplazar los valores de ejemplo (`"TU_API_KEY"`) en tus archivos `.html` con las credenciales reales obtenidas de la Consola de Firebase.
 
 ## 👤 Autor
 
